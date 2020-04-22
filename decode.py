@@ -3,7 +3,6 @@ import nltk
 from collections import defaultdict
 
 class Decoder():
-
     def __init__(self, hmm_model):
         self.tags = []
         self.transition = defaultdict(dict)
@@ -35,18 +34,13 @@ class Decoder():
                     e = e.rstrip().split()
                     self.emission[e[1][1:-1].split('|')[0].lower()][e[1][1:-1].split('|')[1]] = float(e[3])
             
-
     def tranp(self, tag1, tag2):
-        try:
-            return self.transition[tag1][tag2]/sum(self.transition[tag1].values())
-        except:
-            return 0
+        try: return self.transition[tag1][tag2]/sum(self.transition[tag1].values())
+        except: return 0
 
     def emisp(self, word, tag):
-        try:
-            return self.emission[word][tag]/sum(self.emission[word].values())
-        except:
-            return 0
+        try: return self.emission[word][tag]/sum(self.emission[word].values())
+        except: return 0
 
     def decode_viterbi(self, sentence):
         words = nltk.tokenize.word_tokenize(sentence)
@@ -56,13 +50,11 @@ class Decoder():
         for i in range(len(words)):
             word = words[i].lower()
             if i == 0:
-                #for tag in self.emission[word].keys():
                 for tag in self.tags:
                     m[i][tag] = ['Begin', self.tranp('Begin', tag)]
                     if word in self.emission.keys():
                         m[i][tag][1] *= self.emisp(word, tag)
             else:
-                #for tag in self.emission[word].keys():
                 for tag in self.tags:
                     vals = []
                     for prev_tag in m[i-1].keys():
@@ -78,11 +70,7 @@ class Decoder():
         return list(reversed(prediction))
 
 if __name__ == "__main__":
-    
     sentence = input()
-
+    
     d = Decoder("./hmmmodel.txt")
     print(*d.decode_viterbi(sentence))
-
-
-
